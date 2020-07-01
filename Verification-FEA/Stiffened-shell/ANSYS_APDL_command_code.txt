@@ -1,0 +1,340 @@
+! Base shell with two stiffeners
+! Loading: pressure on the base shell
+! BC: The edges of the plate are simply supported and the edge of the stiffeners are free
+
+!0. Initialise
+! set geometrical parameters
+
+!  lengths, width, and height of base shell, part 1 in xy-plane
+L_1 = 1524e-3						! [m] length of base shell 1 (xy-plane)
+W_1 = L_1/2						    ! [m] width of base shell 1 (xy-plane)
+H_1 = 6.3e-3						! [m] thickness of base shell 1 (xz and yz-plane)
+
+!  lengths, width, and height of stiffener, part 2 in yz plane
+L_2 = L_1						! [m] length of stiffener 2 (yz-plane)
+H_2 = 76.2e-3						! [m] height of stiffener 2 (xz-plane)
+W_2 = 12.7e-3						! [m] thickness of stiffener 2 (xz-plane)
+
+!  lengths, width, and height of stiffener, part 3 in xz plane
+L_3 = W_1							! [m] length of stiffener 3 (xz-plane)
+H_3 = 0.127							! [m] height of stiffener 3 (xz-plane)
+W_3 = W_2							! [m] thickness of stiffener 3 (yz-plane)
+
+! set material properties
+E = 203.84e9                  		! [Pa] E-modulus of aluminium
+v = 0.3								! [-] Poission ratio
+
+!0.1 Set properties under investigation
+! CHANGE THIS SECTION PER LOADCASE
+q = 68947.5729						! [Pa=N/m^2], Pressure on base shell
+P = 0								! [N], Concentrated force on the center of the base shell
+
+!0.2 Set mesh properties
+NDIV_Int_Z =1						! [#], Scaling for the mesh density, adjust from 1, 2, 3, ... 
+NDIV_Z = NDIV_Int_Z*5 					! [#], Number of divisions for stiffener height in z-direction 
+NDIV_X = 6*NDIV_Z					! [#], Number of divisions for the edge of the base shell in x-direction 
+NDIV_Y = 12*NDIV_Z					! [#], Number of divisions for the edge of the base shell in y-direction 
+
+!1. Preprocessor steps
+! call preprocessor
+/PREP7
+
+!1.1 define material
+MPTEMP,1,0
+MPDATA,EX,1,,E
+MPDATA,PRXY,1,,v
+
+!1.2 select element type
+! From the documentation: For the stiffened shell, the most effective choice is to use KEYOPT(3) = 0 for the shell and KEYOPT(3) = 2 for the stiffener.
+ET,1,SHELL181
+KEYOPT, 1, 3, 0 			! KEYOPT, ITYPE, KNUM, VALUE
+! Element for the bending behaviour of the stiffener
+ET,2,SHELL181
+KEYOPT, 2, 3, 2				! KEYOPT, ITYPE, KNUM, VALUE
+
+!1.2 define element sections
+!  section number 1 for the base shell, thickness (xz abd yz-plane), width (z-plane) 
+SECTYPE,1,SHELL		! SECTYPE, SectionID, type
+SECDATA, H_1, 1,,, 	! SECDATA, thickness, material ID, theta (angle w.r.t. coordinate system), number of integration points
+
+!  section number 2 for the stiffener, part 2 in the yz plane, thickness (xz and yz-plane), width (z-plane) 
+SECTYPE,2,SHELL		! SECTYPE, SectionID, type
+SECDATA, W_2, 1,,, 	! SECDATA, thickness, material ID, theta (angle w.r.t. coordinate system), number of integration points
+
+!  section number 3 for the stiffener, part 3 in the xz plane, thickness (xz and yz-plane), width (z-plane) 
+!SECTYPE,2,SHELL		! SECTYPE, SectionID, type
+!SECDATA, W_3, 1,,, 	! SECDATA, thickness, material ID, theta (angle w.r.t. coordinate system), number of integration points
+
+
+!1.3 define key points
+! Keypoint [K], Keypoint number, X-coordinate, Y-coordinate, Z-coordinate
+! base shell keypoints
+K, 			1, 		  	  0,				 0,		 		0
+K, 			2,  	  W_1/2,				 0,				0
+K, 			3,  	    W_1,			     0,  	 		0
+K, 			4,  	    W_1,			 L_1/2,  	 		0
+K, 			5,  	    W_1,			   L_1,  	 		0
+K, 			6,  	  W_1/2,			   L_1,  	 		0
+K, 			7,  	      0,			   L_1,  	 		0
+K, 			8,  	      0,			 L_1/2,  	 		0
+K, 			9,  	  W_1/2,			 L_1/2,  	 		0
+
+! shared keypoints between the stiffeners in the middle
+K, 			10,  	  W_1/2,			 L_1/2,  	H_2+H_1/2
+K, 			11,  	  W_1/2,			 L_1/2,  	H_3+H_1/2
+
+! outer nodes of stiffener, part 3
+K, 			12,  	      0,			 L_1/2,  	H_3+H_1/2
+K, 			13,  	      0,			 L_1/2,  	H_2+H_1/2
+
+! outer nodes of stiffener, part 3
+K, 			14,  	    W_1,			 L_1/2,  	H_3+H_1/2
+K, 			15,  	    W_1,			 L_1/2,  	H_2+H_1/2
+
+! outer nodes of stiffener , part 2
+K, 			16,  	  W_1/2,				 0,		H_2+H_1/2
+K, 			17,  	  W_1/2,			   L_1,	    H_2+H_1/2
+
+!1.4 define lines with ID's
+! Define Lines, index on sections
+! Line [L], Keypoint number 1, Keypoint number 2
+! Lines parallel to the x-axis and on the boundary plain
+*GET, Line_ID1, LINE, 0, NUM, MAXD 			! Get the current total number of lines and save
+L, 1, 2				! Area 1 of the base shell, part 1
+L, 2, 3				! Area 2 of the base shell, part 1
+L, 5, 6				! Area 3 of the base shell, part 1
+L, 6, 7				! Area 4 of the base shell, part 1
+
+! Lines parallel to the x-axis NOT on the boundary plain
+*GET, Line_ID2, LINE, 0, NUM, MAXD 			! Get the current total number of lines and save
+L, 8, 9				! Area 1 of the base shell, part 1 / Area 7 of the stiffener, part 3
+L, 9, 4				! Area 2 of the base shell, part 1 / Area 8 of the stiffener, part 3
+L, 13, 10			! Area 8 of the stiffener, part 3 / Area 9 of the stiffener, part 3
+L, 10, 15			! Area 7 of the stiffener, part 3 / Area 10 of the stiffener, part 3
+L, 12, 11			! Area 9 of the stiffener, part 3
+L, 11, 14			! Area 10 of the stiffener, part 3
+
+! Lines parallel to the y-axis and on the boundary plain
+*GET, Line_ID3, LINE, 0, NUM, MAXD 			! Get the current total number of lines and save
+L, 1, 8				! Area 1 of the base shell, part 1
+L, 3, 4				! Area 2 of the base shell, part 1
+L, 7, 8				! Area 3 of the base shell, part 1
+L, 4, 5				! Area 4 of the base shell, part 1
+
+! Lines parallel to the y-axis NOT on the boundary plain
+*GET, Line_ID4, LINE, 0, NUM, MAXD 			! Get the current total number of lines and save
+L, 2, 9				! Area 1/2 of the base shell, part 1 / Area 5 of the stiffener, part 2
+L, 10, 16			! Area 5 of the stiffener, part 2
+L, 9, 6				! Area 3/4 of the base shell, part 1 / Area 6 of the stiffener, part 2
+L, 10, 17			! Area 6 of the stiffener, part 2
+
+! Lines parallel to the z-axis and on the lower part on the boundary plain
+*GET, Line_ID5, LINE, 0, NUM, MAXD			! Get the current total number of lines and save
+L, 8, 13			! 
+L, 4, 15			! 
+L, 2, 16			! 
+L, 6, 17			! 
+
+! Lines parallel to the z-axis and on the lower part NOT on the boundary plain
+*GET, Line_ID6, LINE, 0, NUM, MAXD			! Get the current total number of lines and save
+L, 9, 10			! 
+
+! Lines parallel to the z-axis and on the upper part of the boundary plain
+*GET, Line_ID7, LINE, 0, NUM, MAXD			! Get the current total number of lines and save
+L, 12, 13			! 
+L, 14, 15			! 
+
+! Lines parallel to the z-axis and on the upper part NOT on the boundary plain
+*GET, Line_ID8, LINE, 0, NUM, MAXD			! Get the current total number of lines and save
+L, 10, 11			! 
+
+*GET, Line_ID9, LINE, 0, NUM, MAXD			! Get the current total number of lines and save
+
+
+!1.4 define areas
+! Area [A], Keypoint number 1, Keypoint number 2, Keypoint number 3, Keypoint number 4
+*GET, Area_ID1, AREA, 0, NUM, MAXD			! Get the current total number of areas and save
+! Area for the base shell 1, set Area_ID1
+A, 1, 2, 9, 8 	
+A, 2, 3, 4, 9
+A, 8, 9, 6, 7
+A, 9, 4, 5, 6
+
+! Area for part 2, stiffener in yz plane, set Area_ID2
+*GET, Area_ID2, AREA, 0, NUM, MAXD			! Get the current total number of areas and save
+A, 2, 16, 10, 9		! Area 5 for part 2, stiffener in yz plane
+A, 9, 10, 17, 6		! Area 6 for part 2, stiffener in yz plane
+
+! Areas for part 3, stiffener in xz plane, set Area_ID3
+*GET, Area_ID3, AREA, 0, NUM, MAXD			! Get the current total number of areas and save
+A, 8, 9, 10, 13		! Area 7 for lower section of part 3, stiffener in yz plane
+A, 9, 4, 15, 10		! Area 8 for lower section of part 3, stiffener in yz plane
+
+A, 13, 10, 11, 12	! Area 9 for upper section of part 3, stiffener in yz plane
+A, 10, 15, 14, 11	! Area 10 for upper section of part 3, stiffener in yz plane
+
+*GET, Area_ID4, AREA, 0, NUM, MAXD			! Get the current total number of areas and save
+
+!1.5 set mesh density
+! lines parallel to x-axis with Line_ID1 and Line_ID2
+LSEL,S,LINE,,Line_ID1+1 ,Line_ID3 	! select lines
+LESIZE,ALL, , ,NDIV_X/2				! mesh NDIV_X elements per line
+LSEL, ALL							! deselect lines 
+
+! lines parallel to y-axis with Line_ID3 and Line_ID4
+LSEL,S,LINE,,Line_ID3+1 ,Line_ID5 	! select lines
+LESIZE,ALL, , ,NDIV_Y/2			 	! mesh NDIV_Y elements per line
+LSEL, ALL							! deselect lines 
+
+! lines parallel to z-axis with Line_ID5, Line_ID_6
+LSEL,S,LINE,,Line_ID5+1 ,Line_ID7 	! select lines
+LESIZE,ALL, , ,(3/5)*NDIV_Z			 	! mesh NDIV_Z elements per line
+LSEL, ALL							! deselect lines 
+
+! lines parallel to z-axis with Line_ID_7 and Line_ID_8
+LSEL,S,LINE,,Line_ID7+1 ,Line_ID9 	! select lines
+LESIZE,ALL, , ,(2/5)*NDIV_Z			! mesh NDIV_Z elements per line
+LSEL, ALL							! deselect lines
+
+!1.6 mesh
+! Mesh the base shell, part 1 with Area_ID1 with Shell Type 1 of elements and its according section number 1
+TYPE, 1
+SECNUM, 1
+ASEL, S, AREA, , Area_ID1+1, AREA_ID2		! select areas
+AMESH, ALL
+ASEL, ALL								 	! deselect areas
+
+! Mesh the stiffener, part 2 and part 3 with Area_ID2 and Area_ID2 with Shell Type 2 of elements and its according section number 2
+TYPE, 2
+SECNUM, 2
+ASEL, S, AREA, , Area_ID2+1, AREA_ID4		! select areas
+AMESH, ALL
+ASEL, ALL								 	! deselect areas
+
+!Get the total number of elements
+*GET, TotNumElem, elem, , count 
+
+!1.7 Set constraints
+! Simply support lines parallel to the x-axis and on the boundary plain with Line_ID1 
+! Constraint them in y direction
+LSEL, S, LINE, , Line_ID1+1, Line_ID2, 1 	! select lines
+DL, ALL, , UY, 0, 
+LSEL, ALL									! deselect lines
+! Constraint them in z direction
+LSEL, S, LINE, , Line_ID1+1, Line_ID2, 1 	! select lines 
+DL, ALL, , UZ, 0, 
+LSEL, ALL									! deselect lines
+
+! Do nothing with Line_ID2, these are internal lines and should be free
+
+! Simply support lines parallel to y-axis and on the boundary plain with Line_ID3,
+! Constraint them in x direction
+LSEL, S, LINE, , Line_ID3+1, Line_ID4, 1 	! select lines 
+DL, ALL, , UX, 0, 
+LSEL, ALL									! deselect lines
+! Constraint them in z direction
+LSEL, S, LINE, , Line_ID3+1, Line_ID4, 1 	! select lines
+DL, ALL, , UZ, 0, 
+LSEL, ALL									! deselect lines
+
+! Do nothing with Line_ID4, these are internal lines and should be free
+
+! Do nothing with Line_ID5, these are the outside of the lower part stiffener and should be free
+
+! Do nothing with Line_ID6, these are internal lines and should be free the stiffener and should be free
+
+! Do nothing with Line_ID7, these are the outside of the upper part of the stiffener and should be free
+
+! Do nothing with Line_ID8, these are internal lines and should be free the stiffener and should be free
+
+!1.8 Defines loadcase
+! Apply a pressure on the base shell with AREA_ID1
+ASEL, S, AREA, , Area_ID1+1, AREA_ID2 		! select areas
+SFA, ALL, , PRES, q, 
+ASEL, ALL									! deselect areas
+
+!1.9 Save image of setup
+/RGB,INDEX,100,100,100, 0   
+/RGB,INDEX, 80, 80, 80,13   
+/RGB,INDEX, 60, 60, 60,14   
+/RGB,INDEX, 0, 0, 0,15  
+APLOT 
+/VIEW,1,1,2,3   
+/ANG,1  
+/REP,FAST   
+!*  
+/PSF,PRES,NORM,2,0,1
+/PBF,DEFA, ,1   
+/PSYMB,CS,0 
+/PSYMB,NDIR,0   
+/PSYMB,ESYS,0   
+/PSYMB,LDIV,0   
+/PSYMB,LDIR,0   
+/PSYMB,ADIR,0   
+/PSYMB,ECON,0   
+/PSYMB,XNODE,0  
+/PSYMB,DOT,1
+/PSYMB,PCONV,   
+/PSYMB,LAYR,0   
+/PSYMB,FBCS,0   
+!*  
+/PBC,ALL, ,1
+/REP
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_setup, eps,
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_setup, png,
+
+!2. Define solutions and solve
+/SOLU
+SOLVE
+
+!3. Post processing
+! Enter post processor
+/POST1
+
+! Get the displacement in z-direction of the center
+NodeNumCenter = Node(W_1/2, L_1/2, 0)
+*GET, w_center, NODE, NodeNumCenter, U, Z
+
+!3.1 Save the graphical output
+! Open Results viewer
+/SHOW,WIN32C
+SET,FIRST   
+/PLOPTS,INFO,3  
+/PNUM,MAT,1 
+/NUMBER,1   
+/REPLOT,RESIZE  
+
+! Set to displacement in z-direction
+PLNSOL,U,Z
+
+! Set view to 3D and save as eps and png
+/VIEW,1,1,1,1   
+/ANG,1
+/REP,FAST  
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_3dview, eps,
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_3dview, png,
+
+! Set view to sideview of xz plane and save
+/VIEW,1,,-1 
+/ANG,1  
+/REP,FAST
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_sideview_xz, eps,
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_sideview_xz, png,
+
+! Set view to sideview of yz plane and save
+/VIEW,1,1   
+/ANG,1,-90,ZS,1 
+/REP,FAST 
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_sideview_yz, eps,
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_sideview_yz, png,
+
+! Set view to topview of yx plane and save
+/VIEW,1,,,1 
+/ANG,1  
+/REP,FAST
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_topview_xy, eps,
+/IMAGE, SAVE, TotNumElem_%TotNumElem%_displacements_z_topview_xy, png,
+
+!3.1 Save the parameters output
+PARSAV, SCALAR, TotNumElem_%TotNumElem%_center_displacement, txt,
+
