@@ -1,0 +1,108 @@
+control block:
+n                       do not show progress
+-0.0127 -0.0127 0.05				    eye in space
+0.0127 0.0127 0            look at   
+3                     zoom factor
+/dev/null
+#
+#
+#
+ title     Square simple supported shell with orthogonal stiffeners and distributed force on base
+# 
+# minimum distance for nodes:
+ min_dis      0.0001
+# number of branches:
+ numbr       1
+##############################
+# Branches:
+#  Branch 1: base_shell
+# 	Number of branch
+ branch    1
+# 	Name of branch (No space before name, see readprob.p)
+name      base_1
+#
+ surftype carth_plate
+#
+ meshsize  0.0010
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 1 0
+ 0 0 1 to  0 0 1
+ trans     0 0 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  25
+ begin     0 0
+ end       0.0254 0
+#
+ side      2
+ numinter  25
+ begin     0.0254 0
+ end       0.0254 0.0254
+#
+ side      3
+ numinter  25
+ begin     0.0254 0.0254
+ end       0 0.0254
+#
+ side      4
+ numinter  25
+ begin     0 0.0254
+ end       0 0
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+ elemtype ctrib3
+ thick    0.000254
+ press    6894.757
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    117.21e9
+ poisson  0.3
+#
+#
+# Element options
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+#
+#
+##############################
+# Set the support planes
+#	At x=0.0254, y=0 in x direction
+Sup plane  0.0254 0 0   1 0 0   1 +
+#Sup plane  0.0254 0 0   1 0 0   2 +
+Sup plane  0.0254 0 0   1 0 0   3 +
+#
+#	At x=0, y=0 in x direction
+Sup plane  0 0 0   1 0 0   1 +
+#Sup plane  0 0 0   1 0 0   2 +
+Sup plane  0 0 0   1 0 0   3 +
+#
+#	At x=0, y=0 in y direction
+#Sup plane  0 0 0   0 1 0   1 +
+Sup plane  0 0 0   0 1 0   2 +
+Sup plane  0 0 0   0 1 0   3 +
+#
+#	At x=0, y=0.0254 in y direction
+#Sup plane  0 0.0254 0   0 1 0   1 +
+Sup plane  0 0.0254 0   0 1 0   2 +
+Sup plane  0 0.0254 0   0 1 0   3 +

@@ -1,0 +1,556 @@
+control block:
+n                       do not show progress
+-1 -1 2				    eye in space
+0.381 .762 0            look at   
+4.5                     zoom factor
+/dev/null
+#
+#
+#
+ title     Square simple supported shell with orthogonal free stiffeners and concentrated force on base
+# 
+# minimum distance for nodes:
+ min_dis      0.001
+# number of branches:
+ numbr       7
+##############################
+# Branches:
+#  Branch 1: base_shell_area_1
+# 	Number of branch
+ branch    1
+# 	Name of branch (No space before name, see readprob.p)
+name      base_1
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 1 0
+ 0 0 1 to  0 0 1
+ trans     0 0 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  15
+ begin     0 0
+ end       0.381 0
+translational
+support   -++
+#
+ side      2
+ numinter  30
+ begin     0.381 0
+ end       0.381 0.762
+#No supports, connected to the base_shell_area_2/stiffener_yz_area_5 here
+#
+ side      3
+ numinter  15
+ begin     0.381 0.762
+ end       0 0.762
+#No supports, connected to the base_shell_area_3/stiffener_xz_area_7 here
+#
+ side      4
+ numinter  30
+ begin     0 0.762
+ end       0 0
+translational
+support   +-+
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+ elemtype ctrib3
+ thick    0.00635
+ press    68947.57
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+#
+# Element options
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+##############################
+# Branches:
+#  Branch 2: base_shell_area_2
+# 	Number of branch
+ branch    2
+# 	Name of branch (No space before name, see readprob.p)
+name      base_2
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 1 0
+ 0 0 1 to  0 0 1
+ trans     0.381 0 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  15
+ begin     0 0
+ end       0.381 0
+translational
+support   -++
+#
+ side      2
+ numinter  30
+ begin     0.381 0
+ end       0.381 0.762
+translational
+support   +-+
+#
+ side      3
+ numinter  15
+ begin     0.381 0.762
+ end       0 0.762
+#No supports, connected to the base_shell_area_4/stiffener_xz_area_8
+#
+ side      4
+ numinter  30
+ begin     0 0.762
+ end       0 0
+#No supports, connected to the base_shell_area_1/stiffener_yz_area_5 here
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+ elemtype ctrib3
+ thick    0.00635
+ press    68947.57
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+#
+# Element options
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+##############################
+# Branches:
+#  Branch 3: base_shell_area_3
+# 	Number of branch
+ branch    3
+# 	Name of branch (No space before name, see readprob.p)
+name      base_3
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 1 0
+ 0 0 1 to  0 0 1
+ trans     0 0.762 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  15
+ begin     0 0
+ end       0.381 0
+#No supports, connected to the base_shell_area_1/stiffener_xz_area_7
+#
+ side      2
+ numinter  30
+ begin     0.381 0
+ end       0.381 0.762
+#No supports, connected to the base_shell_area_4/stiffener_yz_area_6 here
+#
+ side      3
+ numinter  15
+ begin     0.381 0.762
+ end       0 0.762
+translational
+support   -++
+#
+ side      4
+ numinter  30
+ begin     0 0.762
+ end       0 0
+translational
+support   +-+
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+ elemtype ctrib3
+ thick    0.00635
+ press    68947.57
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+#
+# Element options
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+##############################
+# Branches:
+#  Branch 4: base_shell_area_4
+# 	Number of branch
+ branch    4
+# 	Name of branch (No space before name, see readprob.p)
+name      base_4
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 1 0
+ 0 0 1 to  0 0 1
+ trans     0.381 0.762 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  15
+ begin     0 0
+ end       0.381 0
+#No supports, connected to the base_shell_area_2/stiffener_xz_area_8
+#
+ side      2
+ numinter  30
+ begin     0.381 0
+ end       0.381 0.762
+translational
+support   +-+
+#
+ side      3
+ numinter  15
+ begin     0.381 0.762
+ end       0 0.762
+translational
+support   -++
+#
+ side      4
+ numinter  30
+ begin     0 0.762
+ end       0 0
+#No supports, connected to the base_shell_area_3/stiffener_yz_area_6 here
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+ elemtype ctrib3
+ thick    0.00635
+ press    68947.57
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+#
+# Element options
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+##############################
+#  Branch 5: Stiffener in to xz plane area 7, the lower part equally high to Branch 7
+# 	Number of branch
+ branch    5
+# 	Name of branch (No space before name, see readprob.p)
+name      stif_xz_7
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 0 1
+ 0 0 1 to  0 -1 0
+ trans     0 0.762 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+#
+ numinter  15
+ begin     0 0
+ end       0.381 0
+#
+ side      2
+ numinter  3
+ begin     0.381 0
+ end       0.381 0.0762
+#
+ side      3
+ numinter  15
+ begin     0.381 0.0762
+ end       0 0.0762
+#
+ side      4
+ numinter  3
+ begin     0 0.0762
+ end       0 0
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+#
+ elemtype ctrib3
+ thick    0.0127
+ press    0
+#
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+#
+# Element options
+#
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+##############################
+#  Branch 6: Stiffener in to xz plane area 9, the upper part
+# 	Number of branch
+ branch    6
+# 	Name of branch (No space before name, see readprob.p)
+name      stif_xz_9
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  1 0 0
+ 0 1 0 to  0 0 1
+ 0 0 1 to  0 -1 0
+ trans     0 0.762 0.0762
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  15
+ begin     0 0
+ end       0.381 0
+#
+ side      2
+ numinter  2
+ begin     0.381 0
+ end       0.381 0.0508
+#
+ side      3
+ numinter  15
+ begin     0.381 0.0508
+ end       0 0.0508
+#
+ side      4
+ numinter  2
+ begin     0 0.0508
+ end       0 0
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+#
+ elemtype ctrib3
+ thick    0.0127
+ press    0
+#
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+#
+# Element options
+#
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+##############################
+#  Branch 7: Stiffener in to xz plane area 5
+# 	Number of branch
+ branch    7
+# 	Name of branch (No space before name, see readprob.p)
+name      stif_yz_5
+#
+ surftype carth_plate
+#
+ meshsize  0.0254
+#
+ rotate      
+ 1 0 0 to  0 1 0
+ 0 1 0 to  0 0 1
+ 0 0 1 to  1 0 0
+ trans     0.381 0 0
+#
+ numsides  4
+ used      4
+#
+ side      1
+ numinter  30
+ begin     0 0
+ end       0.762 0
+#
+ side      2
+ numinter  3
+ begin     0.762 0
+ end       0.762 0.0762
+#
+ side      3
+ numinter  30
+ begin     0.762 0.0762
+ end       0 0.0762
+#
+ side      4
+ numinter  3
+ begin     0 0.0762
+ end       0 0
+#
+ boundary
+ use side +1
+ use side +2
+ use side +3
+ use side +4
+#
+#
+ elemtype ctrib3
+ thick    0.0127
+ press    0
+#
+# layer model buildup:
+#
+layered
+ nrlayers 1
+# First layer
+ z        -0.5 0.5
+density   7800
+ matbehav iso_elast
+ young    206.84e9
+ poisson  0.3
+#
+##############################
+# Element options
+#
+#
+# Use corrected membrane deformations:
+# Total Lagrangian:
+#
+options   false false false false
+#
+# 	Copy the siffener in to yz plane (area 7 and 9) 1 time in y-direction 
+##################
+BrCopy    5
+ shift    0.381 0 0
+ new name stif_xz_8
+BrCopy    6
+ shift    0.381 0 0
+ new name stif_xz_10
+#
+# 	Copy the siffener in to xz plane (area 5) 1 time in y-direction 
+##################
+BrCopy    7
+ shift    0 0.762 0
+ new name stif_yz_6
+#
+##############################
+# Set concentrated force
+#	In the middle of the base shell in positive z direction
+#		  x     y     z comp magnitude 
+fflux     0.381 0.762 0  3   0
+#
